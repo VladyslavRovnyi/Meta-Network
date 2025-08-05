@@ -69,6 +69,8 @@ if (isset($_SESSION["login"])) {
                               method="post"
                               enctype="multipart/form-data"
                               style="width:230px;">
+
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                             <!-- Username -->
                             <div class="form-group">
                                 <label for="username" class="control-label">Username</label>

@@ -13,7 +13,7 @@ if (isset($_SESSION["login"])) {
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <form class="form-horizontal" name="app" id="app" method="post" action="./index.php?page=post" enctype="multipart/form-data">
-
+                    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                     <!-- Object #text binded with the 'letterCount' function -->
                     <div id="text" class="form-group">
                         <div class="input-group">

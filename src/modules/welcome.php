@@ -5,6 +5,8 @@
 			<!-- Include validator for bootstrap 3 -->
 			<form class="form-signin" name="app" id="app" method="post" data-toggle="validator" action="/index.php?page=login">
 
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+
 				<div class="form-group lg">
 					<h2 class="form-signin-heading text-center">Please login</h2>
 				</div>

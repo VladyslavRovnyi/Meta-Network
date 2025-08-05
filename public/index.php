@@ -22,6 +22,24 @@ if (isset($_GET['page']) && $_GET['page'] === 'comment_add') {
     exit; // stop the layout from rendering
 }
 
+// ---- Security bootstrap ----
+require_once __DIR__ . '/../src/security.php';
+
+// Short-circuit *JSON* endpoints so layout HTML is not printed
+if (isset($_GET['page']) && in_array($_GET['page'], [
+        'comment_add'
+    ], true)) {
+    require_auth(true);          // must be logged in
+    json_mode();                 // return JSON only
+    // For POST JSON endpoints, enforce CSRF header
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        verify_csrf_or_die(true);
+    }
+    require_once __DIR__ . '/../src/modules/' . $_GET['page'] . '.php';
+    exit;
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +64,12 @@ if (isset($_GET['page']) && $_GET['page'] === 'comment_add') {
 				overflow-y: auto;
 			}
 		</style>
-	</head>
+
+        <script>
+            window.csrfToken = "<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>";
+        </script>
+
+    </head>
 	<body>
 
 		<div class="container-fluid">
@@ -81,7 +104,7 @@ if (isset($_GET['page']) && $_GET['page'] === 'comment_add') {
 										</a>
 										<ul class="dropdown-menu" role="menu">
 											<li>
-												<a href="../../src/modules/exit.php"><span class="glyphicon glyphicon-log-out"></span> Quit</a>
+												<a href="<?= $baseUrl; ?>/exit"><span class="glyphicon glyphicon-log-out"></span> Quit</a>
 											</li>
 										</ul>
 									</li>
@@ -99,7 +122,7 @@ if (isset($_GET['page']) && $_GET['page'] === 'comment_add') {
 												<a href="<?= $baseUrl; ?>/profile/<?= $guid; ?>"><span class="glyphicon glyphicon-user"></span> Profile</a>
 											</li>
 											<li>
-												<a href="../src/modules/exit.php"><span class="glyphicon glyphicon-log-out"></span> Quit</a>
+												<a href="<?= $baseUrl; ?>/exit"><span class="glyphicon glyphicon-log-out"></span> Quit</a>
 											</li>
 										</ul>
 									</li>

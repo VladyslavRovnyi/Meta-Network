@@ -5,6 +5,12 @@
 
 	// Load application files
 	require_once __DIR__ . '/../autoload.php';
+	require_once __DIR__ . '/../security.php';
+
+require_auth(false);                 // session required
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	verify_csrf_or_die(false);       // require the hidden form token
+}
 
 	if (isset($_GET['id'])) {
 		// Gets the publication id

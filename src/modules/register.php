@@ -42,6 +42,7 @@
 							alert('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy');
 							return false;
 						}" action="/index.php?page=login">
+                    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
 
 					<div class="form-group lg">
 						<h2 class="form-signin-heading text-center">Sign up</h2>

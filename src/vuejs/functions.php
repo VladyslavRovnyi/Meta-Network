@@ -67,7 +67,6 @@ function loadTable($items, $votes) { ?>
                     if (this.page > 1) this.page--;
                 },
 
-                // === NEW: add a comment via fetch (works without jQuery AJAX) ===
                 sendComment: function (quoteId) {
                     var input = document.getElementById('comment-text-' + quoteId);
                     if (!input) return;
@@ -81,33 +80,36 @@ function loadTable($items, $votes) { ?>
 
                     fetch('/index.php?page=comment_add', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': (window.csrfToken || '')},
                         body: form.toString()
                     })
-                        .then(function (r) { return r.json().catch(function(){ return { ok:false, msg:'Bad JSON'}; }); })
-                        .then(function (res) {
-                            if (!res || res.ok !== true) {
-                                alert((res && res.msg) ? res.msg : 'Failed to add comment.');
-                                return;
+                        .then(function(r){ return r.text(); })
+                        .then(function(t){
+                            try {
+                                var res = JSON.parse(t);
+                                if (res && res.ok === true) {
+                                    // update UI without reload
+                                    var item = vm.items.find(function(x){ return String(x.id) === String(quoteId); });
+                                    if (item) {
+                                        if (!Array.isArray(item.comments)) item.comments = [];
+                                        item.comments.push({
+                                            id: 0, body: body,
+                                            created: new Date().toISOString().slice(0,19).replace('T',' '),
+                                            guid: (window.currentUserGuid || ''), user: (window.currentUsername || 'You')
+                                        });
+                                    }
+                                    input.value = '';
+                                } else {
+                                    alert((res && res.msg) ? res.msg : 'Failed to add comment.');
+                                }
+                            } catch(e) {
+                                // Not JSON — show the server output to diagnose
+                                alert(t.slice(0, 500) || 'Empty response');
                             }
-                            // Update UI without full reload
-                            var item = vm.items.find(function (x) { return String(x.id) === String(quoteId); });
-                            if (item) {
-                                if (!Array.isArray(item.comments)) item.comments = [];
-                                item.comments.push({
-                                    id: 0,
-                                    body: body,
-                                    created: new Date().toISOString().slice(0,19).replace('T',' '),
-                                    guid: (window.currentUserGuid || ''),   // optional: set these globals if you have them
-                                    user: (window.currentUsername || 'You') // so the link/user shows nicely
-                                });
-                            }
-                            input.value = '';
                         })
-                        .catch(function () {
-                            alert('Failed to add comment.');
-                        });
+                        .catch(function(){ alert('Network error'); });
                 }
+
             },
             computed: {
                 search: function () {
