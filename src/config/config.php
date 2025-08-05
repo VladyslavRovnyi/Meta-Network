@@ -3,7 +3,9 @@
 	// Configuration for Database
 	define("DB_HOST", "localhost");
 	define("DB_USER", "root");
-	define("DB_PASS", "1221");
-	define("DB_NAME", "network");
+
+	define("DB_PASS", "CHANGE_ME");
+
+	define("DB_NAME", "NETWORK");
 
 ?>
